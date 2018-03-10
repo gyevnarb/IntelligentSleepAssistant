@@ -7,12 +7,14 @@ import json
 import os
 import datetime
 
+
+
+
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'crud.sqlite')
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-
 
 class MyEncoder(JSONEncoder):
     def default(self, o):
@@ -56,9 +58,17 @@ users_schema = UserSchema(many=True)
 @app.route("/data", methods=["POST"])
 def add_user():
     now = datetime.datetime.now()
-    date = str(now.year) + str(now.month) + str(now.day)
-    time = str(now.hour)  + str(now.minute) + str(now.second)
-    data = request.json['data']
+    month = str(now.month)
+    if (len(month) == 1):
+        month = "0" + month
+    date = str(now.year) +'-' + month + '-' + str(now.day)
+    time = str(now.hour) + ":" + str(now.minute) + ":" + str(now.second)
+    temp = str(request.json['Tempr'])
+    light = str(request.json['Light'])
+    co2 = str(request.json['eCO2'])
+    moisture = str(request.json['Humid'])
+    #data = []
+    data = [temp,light,moisture,co2]
     new_entry = MBedData(date ,time, data)
     db.session.add(new_entry)
     db.session.commit()
@@ -82,8 +92,6 @@ def user_delete():
     info =  MBedData.query.delete()
     db.session.commit()
     return info
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
