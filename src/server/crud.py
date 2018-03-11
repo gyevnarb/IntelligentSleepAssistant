@@ -88,6 +88,10 @@ def get_user():
     result = users_schema.dump(all_data)
     return jsonify(result.data)
 
+@app.route('/sleep/<date>', methods=["GET"])
+def sleep_date(date):
+    return jsonify(myFitBit.getSleepDataByDate(date))
+
 # endpoint to get user detail by id
 @app.route("/data/<date>", methods=["GET"])
 def user_detail(date):
