@@ -1,0 +1,5 @@
+GET host/data => get all sensor data
+POST host/data => post new data
+GET host/data/<yyyy-mm-dd> => get all sensor data from a date
+GET host/sleep => get all sleep data from fit bit
+GET host/sleep/<date> => get all sleep data from fit bit
