@@ -1,0 +1,51 @@
+{
+    "sleep": [
+        {
+            "dateOfSleep": "2017-04-02",
+            "duration": 7200000,
+            "efficiency": "good",
+            "isMainSleep": true,
+            "levels": {
+                "summary": {
+                    "deep": {
+                        "count": 3,
+                        "minutes": 72,
+                        "thirtyDayAvgMinutes": 56
+                    },
+                    "light": {
+                        "count": 24,
+                        "minutes": 143,
+                        "thirtyDayAvgMinutes": 166
+                    },
+                    "rem": {
+                        "count": 11,
+                        "minutes": 78,
+                        "thirtyDayAvgMinutes": 77
+                    },
+                    "wake": {
+                        "count": 3,
+                        "minutes": 25,
+                        "thirtyDayAvgMinutes": 21
+                    }
+                },
+                "data": [
+                    {
+                        "datetime": "2017-04-01T23:58:30.000",
+                        "level": "wake",
+                        "seconds": 324
+                    },
+                    {
+                        "datetime": "2017-04-02T00:16:30.000",
+                        "level": "rem",
+                        "seconds": 576
+                    },
+                    {
+                        "datetime": "2017-04-02T00:16:30.000",
+                        "level": "light",
+                        "seconds": 2135
+                    }
+                ]
+            }
+        }
+    ]
+}
