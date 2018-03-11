@@ -119,8 +119,15 @@ def add_user():
     month = str(now.month)
     if (len(month) == 1):
         month = "0" + month
+    minute  = str(now.minute)
+    if (len(minute) == 1):
+        minute = "0" + minute
+
+    second = str(now.second)
+    if (len(second) == 1):
+        second = "0" + second
     date = str(now.year) +'-' + month + '-' + str(now.day)
-    time = str(now.hour) + ":" + str(now.minute) + ":" + str(now.second)
+    time = str(now.hour) + ":" + minute + ":" + second
     temp = str(request.json['Tempr'])
     light = str(request.json['Light'])
     co2 = str(request.json['eCO2'])
@@ -158,4 +165,4 @@ def user_delete():
     return info
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
