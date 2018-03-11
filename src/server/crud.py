@@ -6,7 +6,7 @@ from json import JSONEncoder
 import json
 import os
 import datetime
-
+import myFitBit
 
 
 
@@ -19,6 +19,8 @@ ma = Marshmallow(app)
 class MyEncoder(JSONEncoder):
     def default(self, o):
         return o.__dict__
+
+
 
 class MBedData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,7 +55,9 @@ class UserSchema(ma.Schema):
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-
+@app.route("/")
+def hello():
+    return "Hello World!"
 # endpoint to create new user
 @app.route("/data", methods=["POST"])
 def add_user():
@@ -74,6 +78,9 @@ def add_user():
     db.session.commit()
     return user_schema.jsonify(new_entry)
 
+@app.route("/sleep", methods=["GET"])
+def get_sleep():
+    return jsonify(myFitBit.getSleepData());
 # endpoint to show all users
 @app.route("/data", methods=["GET"])
 def get_user():
