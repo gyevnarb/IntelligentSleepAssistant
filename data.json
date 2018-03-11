@@ -1,0 +1,106 @@
+[
+    {
+        "data": [
+          {
+              "airData": "0.9",
+              "date": "2018-3-8",
+              "lightData": "0.1",
+              "moistureData": "0.5",
+              "tempData": "24.5",
+              "time": "19:29:59"
+          },
+          {
+              "airData": "0.89",
+              "date": "2018-3-8",
+              "lightData": "0.09",
+              "moistureData": "0.49",
+              "tempData": "25.0",
+              "time": "19:30:19"
+          },
+          {
+              "airData": "0.91",
+              "date": "2018-3-8",
+              "lightData": "0.05",
+              "moistureData": "0.45",
+              "tempData": "25.5",
+              "time": "19:30:34"
+          },
+          {
+              "airData": "0.92",
+              "date": "2018-3-8",
+              "lightData": "0.06",
+              "moistureData": "0.41",
+              "tempData": "24.5",
+              "time": "19:30:50"
+          },
+          {
+              "airData": "0.9",
+              "date": "2018-03-10",
+              "lightData": "0.1",
+              "moistureData": "0.5",
+              "tempData": "24.5",
+              "time": "21:5:27"
+          },
+          {
+              "airData": "613.0",
+              "date": "2018-03-10",
+              "lightData": "163.0",
+              "moistureData": "28.46",
+              "tempData": "25.15",
+              "time": "21:28:6"
+          }
+        ]
+    },
+    {
+        "data": [
+          {
+              "airData": "0.9",
+              "date": "2018-3-8",
+              "lightData": "0.1",
+              "moistureData": "0.5",
+              "tempData": "24.5",
+              "time": "19:29:59"
+          },
+          {
+              "airData": "0.89",
+              "date": "2018-3-8",
+              "lightData": "0.09",
+              "moistureData": "0.49",
+              "tempData": "25.0",
+              "time": "19:30:19"
+          },
+          {
+              "airData": "0.91",
+              "date": "2018-3-8",
+              "lightData": "0.05",
+              "moistureData": "0.45",
+              "tempData": "25.5",
+              "time": "19:30:34"
+          },
+          {
+              "airData": "0.92",
+              "date": "2018-3-8",
+              "lightData": "0.06",
+              "moistureData": "0.41",
+              "tempData": "24.5",
+              "time": "19:30:50"
+          },
+          {
+              "airData": "0.9",
+              "date": "2018-03-10",
+              "lightData": "0.1",
+              "moistureData": "0.5",
+              "tempData": "24.5",
+              "time": "21:5:27"
+          },
+          {
+              "airData": "613.0",
+              "date": "2018-03-10",
+              "lightData": "163.0",
+              "moistureData": "28.46",
+              "tempData": "25.15",
+              "time": "21:28:6"
+          }
+        ]
+    }
+]

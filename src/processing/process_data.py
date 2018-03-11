@@ -1,4 +1,4 @@
-#%matplotlib inline
+%matplotlib inline
 import numpy as np
 import matplotlib.pyplot as plt
 import perlin
@@ -6,16 +6,80 @@ import tensorflow as tf
 import json
 import time
 import datetime
-
+import requests as r
+import io
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout, Input, LSTM, Reshape, Lambda, RepeatVector
-from keras.layers import Embedding
+from keras.layers import Dense, LSTM
 
-class Environment:
-    def __init__(self, temperature, brightness, air_quality):
-        self.t = temperature
-        self.b = brightness
-        self.a = air_quality
+def preprocess_data(sleep_json, mbed_json):
+    X = parse_sleep(sleep_json)
+    Y = parse_mbed(mbed_json)
+    return (x, Y)
+
+def parse_mbed(mbed_json, n_y=n_y):
+    first = 0.0
+
+    Y = []
+
+    for mbed in mbed_json:
+        data = mbed['data']
+        for d in data:
+            Y_ = []
+            Y_.append(d["airData"])
+            Y_.append(d["lightData"])
+            Y_.append(d["moistureData"])
+            Y_.append(d["tempData"])
+            # date = d["date"]
+            # hours = d["time"]
+            # t = date + "T" + hours
+            # unix_time = to_unix_time(t)
+            # if (first is 0.0):
+            #     first = unix_time
+            # Y = np.append(Y, unix_time - first)
+            Y.append(Y_)
+
+    return Y
+
+def parse_sleep(in_json, n_x=n_x):
+    X = []
+    m = 0
+    for sleep in in_json:
+        m = m + 1
+        duration = sleep['duration']
+        X_head = np.asarray(duration) / 1000 # Convert to seconds
+
+        efficiency = sleep['efficiency']
+        X_head = np.append(X_head, efficiency)
+
+        levels = sleep['levels']
+
+        X_data = []
+        passed = 0.0
+        data = levels['data']
+        for d in data:
+            X_ = []
+            X_.append(level_to_num(d['level']))
+            secs = d['seconds']
+            X_.append(secs)
+            passed = passed + secs
+            X_.append(passed)
+            X_data.append(X_)
+        X.append(X_data)
+
+    return (X_head, X, m)
+
+def level_to_num(level_str):
+    if (level_str == 'awake'):
+        return 0
+    elif (level_str == 'restless'):
+        return 1
+    elif (level_str == 'asleep'):
+        return 2
+    else:
+        return -1
+
+def to_unix_time(date_time):
+    return time.mktime(datetime.datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S").timetuple())
 
 def generate_data(tmin=15, tmax=22, imin=0, imax=24, d=1440):
     """
@@ -36,125 +100,79 @@ def generate_data(tmin=15, tmax=22, imin=0, imax=24, d=1440):
     #np.clip(noise, tmin, tmax, out=noise)
     return noise
 
-def preprocess_data(sleep_json, mbed_json):
-    X = parse_sleep(sleep_json)
-    Y = parse_mbed(mbed_json)
-    return (x, Y)
-
-def parse_mbed(raw_text):
-    out = json.loads(raw_text)
-
-    first = 0.0
-
-    Y = np.empty(shape=(1,))
-
-    for d in out:
-        Y = np.append(Y, d["airData"])
-        Y = np.append(Y, d["lightData"])
-        Y = np.append(Y, d["moistureData"])
-        Y = np.append(Y, d["tempData"])
-        date = d["date"]
-        hours = d["time"]
-        t = date + " " + hours
-        unix_time = time.mktime(datetime.datetime.strptime(t, "%Y-%m-%d %H:%M:%S").timetuple())
-        if (first is 0.0):
-            first = unix_time
-        Y = np.append(Y, unix_time - first)
-
-    return Y
-
-def parse_sleep(raw_text):
-    out = json.loads(raw_text)
-    sleep = out['sleep'][0]
-
-    duration = sleep['duration']
-    X = np.asarray(duration) / 1000 #Convert to seconds
-
-    efficiency = sleep['efficiency']
-
-    isMainSleep = sleep['isMainSleep']
-    if (isMainSleep):
-        X = np.append(X, 1)
-    else:
-        X = np.append(X, 0)
-
-    levels = sleep['levels']
-
-    summary = levels['summary']
-    s_deep = summary['deep']
-    X = np.append(X, s_deep['count'])
-    X = np.append(X, s_deep['minutes'])
-    X = np.append(X, s_deep['thirtyDayAvgMinutes'])
-
-    s_light = summary['light']
-    X = np.append(X, s_light['count'])
-    X = np.append(X, s_light['minutes'])
-    X = np.append(X, s_light['thirtyDayAvgMinutes'])
-
-    s_rem = summary['rem']
-    X = np.append(X, s_rem['count'])
-    X = np.append(X, s_rem['minutes'])
-    X = np.append(X, s_rem['thirtyDayAvgMinutes'])
-
-    s_wake = summary['wake']
-    X = np.append(X, s_wake['count'])
-    X = np.append(X, s_wake['minutes'])
-    X = np.append(X, s_wake['thirtyDayAvgMinutes'])
-
-    data = levels['data']
-    for d in data:
-        X = np.append(X, level_to_num(d['level']))
-        X = np.append(X, d['seconds'])
-
-    return X
-
-def level_to_num(level_str):
-    if (level_str == 'wake'):
-        return 0
-    elif (level_str == 'rem'):
-        return 1
-    elif (level_str == 'light'):
-        return 2
-    elif (level_str == 'deep'):
-        return 3
-    else:
-        return -1
-
-def env_model(Tx, n_a, n_vals):
-    pass
-    #X = Input()
-
-def generate_random_data():
-    imin = 0
+def generate_random_data(m, plot=True):
+    imin = 16
     imax = 24
     d = (imax - imin) * 60
 
-    temperature = generate_data()
-    brightness = generate_data(100, 2000, imin, imax, d)
-    humidty = np.clip(generate_data(0, 100, imin, imax, d), 0, 100)
-    time = np.linspace(imin, imax, d, endpoint=False)
-    sleepq = np.clip(np.floor(np.random.normal(2, 2, size=d)), 0, 4)
+    Y = []
 
-    plt.hist(sleepq, 5, rwidth=0.9)
-    plt.show()
+    for i in range(m):
+        temperature = generate_data()
+        brightness = generate_data(100, 2000, imin, imax, d)
+        humidity = generate_data(0, 100, imin, imax, d)
+        humidity = humidity / np.max(humidity) * 100
+        co2 = generate_data(0, 1, imin, imax, d)
+        zipped = zip(temperature, brightness, humidity, co2)
 
-    plt.figure(figsize=(20,10))
-    plt.subplot(311)
-    plt.plot(temperature)
-    plt.ylabel('temperatures')
-    plt.subplot(312)
-    plt.plot(brightness)
-    plt.ylabel('brightness')
-    plt.subplot(313)
-    plt.plot(humidty)
-    plt.ylabel('humidty')
-    plt.subplots_adjust(hspace=1)
-    plt.show()
+        rjt = []
+        for (t, b, h, c) in zipped:
+            tmp = [t, b, h, c]
+            rjt.append(tmp)
+        #    rjt.append({'airData': c, 'lightData': b, 'moistureData': h, 'tempData': t})
 
-f = open("sample.json")
-X = parse_sleep(f.read())
+        Y.append(rjt)
+
+    if (plot):
+        plt.figure(figsize=(20,10))
+        plt.subplot(411)
+        plt.plot(temperature)
+        plt.ylabel('temperatures')
+        plt.subplot(412)
+        plt.plot(brightness)
+        plt.ylabel('brightness')
+        plt.subplot(413)
+        plt.plot(humidity)
+        plt.ylabel('humidty')
+        plt.subplot(414)
+        plt.plot(co2)
+        plt.ylabel('CO2')
+        plt.subplots_adjust(hspace=1)
+        plt.show()
+
+    return Y
+
+n_y = 4
+n_x = 3
+n_a = 32
+batch_size = 2
+
+# Pulling data
+base_url = "http://34.245.151.229:5000/"
+sleep_url = "sleep"
+mbed_url = "data"
+resp = r.get(base_url + sleep_url)
+sleep_json = resp.json()
+#resp = r.get(base_url + mbed_url)
+f = open('../../data.json', 'r')
+mbed_json = json.loads(f.read())#resp.json()
+
+#%%
+#Pre-processing data
+(X_head, X, m) = parse_sleep(sleep_json)
+#Y = parse_mbed(mbed_json)
+Y = np.asarray(generate_random_data(m, False)) #Generate random data
 print(X)
-f = open('sample2.json')
-Y = parse_mbed(f.read())
-print(Y)
-f.close()
+for l in X:
+    print(len(l))
+print(Y.shape)
+
+#%%
+#Training LSTM
+model = Sequential()
+model.add(LSTM(n_a, return_sequences=True, input_shape=(None, n_x)))
+model.add(LSTM(n_a, return_sequences=True))
+model.add(LSTM(n_a))
+model.add(Dense(n_y, activation="linear"))
+model.compile(loss="mean_squared_error", optimizer="rmsprop", metrics=['accuracy'])
+model.fit(X, Y, batch_size=batch_size, epochs=5, shuffle=False)
