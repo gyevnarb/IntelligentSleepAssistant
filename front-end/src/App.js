@@ -51,8 +51,8 @@ class App extends Component {
             value:28,
             min:10,
             max:40,
-            colorMin:'#e63b00',
-            colorMax:'#00e63b',
+            colorMin:'#cc6666',
+            colorMax:'#66CC66',
             onChange:val => this.setState(prev => ({
               cards:[
                 ...prev.cards.slice(0,4),
@@ -71,8 +71,6 @@ class App extends Component {
             min:10,
             max:40,
             readOnly:true,
-            colorMin:'#e63b00',
-            colorMax:'#00e63b'
           },
           {
             title:'Recommended Air Quality',
@@ -81,8 +79,6 @@ class App extends Component {
             min:0,
             max:1500,
             readOnly:true,
-            colorMax:'#e63b00',
-            colorMin:'#00e63b'
           },
           {
             title:'Recommended Light Amount',
@@ -91,8 +87,6 @@ class App extends Component {
             min:0,
             max:4000,
             readOnly:true,
-            colorMin:'#e63b00',
-            colorMax:'#00e63b'
           },
           {
             title:'Recommended Moisture',
@@ -101,8 +95,6 @@ class App extends Component {
             min:0,
             max:100,
             readOnly:true,
-            colorMin:'#e63b00',
-            colorMax:'#00e63b'
           }
         ]
       }))
