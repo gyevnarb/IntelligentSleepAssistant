@@ -11,10 +11,10 @@ import io
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
 
-def preprocess_data(sleep_json, mbed_json):
-    X = parse_sleep(sleep_json)
-    Y = parse_mbed(mbed_json)
-    return (x, Y)
+n_y = 4
+n_x = 3
+n_a = 32
+batch_size = 2
 
 def parse_mbed(mbed_json, n_y=n_y):
     first = 0.0
@@ -142,37 +142,52 @@ def generate_random_data(m, plot=True):
 
     return Y
 
-n_y = 4
-n_x = 3
-n_a = 32
-batch_size = 2
+def fetch_data():
+    base_url = "http://34.245.151.229:5000/"
+    sleep_url = "sleep"
+    mbed_url = "data"
+    resp = r.get(base_url + sleep_url)
+    sleep_json = resp.json()
+    #resp = r.get(base_url + mbed_url)
+    f = open('../../data.json', 'r')
+    mbed_json = json.loads(f.read())#resp.json()
+    return (sleep_json, mbed_json)
 
-# Pulling data
-base_url = "http://34.245.151.229:5000/"
-sleep_url = "sleep"
-mbed_url = "data"
-resp = r.get(base_url + sleep_url)
-sleep_json = resp.json()
-#resp = r.get(base_url + mbed_url)
-f = open('../../data.json', 'r')
-mbed_json = json.loads(f.read())#resp.json()
+def create_vectors(sleep_json, mbed_json):
+    (X_head, X, m) = parse_sleep(sleep_json)
+    #Y = parse_mbed(mbed_json)
 
-#%%
-#Pre-processing data
-(X_head, X, m) = parse_sleep(sleep_json)
-#Y = parse_mbed(mbed_json)
-Y = np.asarray(generate_random_data(m, False)) #Generate random data
-print(X)
-for l in X:
-    print(len(l))
-print(Y.shape)
+    #Creating pre-generated data and aligning dimension
+    X_ = []
+    lengths = []
+    for l in X:
+        lengths.append(len(l))
+    max_len = np.max(lengths)
+    for l in X:
+        if (len(l) < 20):
+            continue
+        else:
+            tmp = l
+            for j in range(max_len - len(l)):
+                tmp.append([0, 0, 0])
+        X_.append(tmp)
+    X = np.asarray(X_)
+    m = X.shape[0]
+    Y_ = np.asarray(generate_random_data(m, False)) #Generate random data
+    Y = Y_.reshape(m, 480*4)
+    return (X, Y)
 
-#%%
-#Training LSTM
-model = Sequential()
-model.add(LSTM(n_a, return_sequences=True, input_shape=(None, n_x)))
-model.add(LSTM(n_a, return_sequences=True))
-model.add(LSTM(n_a))
-model.add(Dense(n_y, activation="linear"))
-model.compile(loss="mean_squared_error", optimizer="rmsprop", metrics=['accuracy'])
-model.fit(X, Y, batch_size=batch_size, epochs=5, shuffle=False)
+def create_train_model(X, Y):
+    #Training LSTM
+    model = Sequential()
+    model.add(LSTM(n_a, return_sequences=True, input_shape=(None, n_x)))
+    model.add(LSTM(n_a, return_sequences=True))
+    model.add(LSTM(n_a))
+    model.add(Dense(480*4, activation="linear"))
+    model.compile(loss="mean_squared_error", optimizer="rmsprop", metrics=['accuracy'])
+    model.fit(X, Y, batch_size=2, epochs=10, shuffle=False)
+    return model
+
+(sleep_json, mbed_json) = fetch_data()
+(X, Y) = create_vectors(sleep_json, mbed_json)
+model = create_train_model(X, Y)
