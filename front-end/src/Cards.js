@@ -22,6 +22,8 @@ export default class Cards extends Component {
                 {...card}
             />
         )
+    if (card.element === 'html')
+        return card.html
   }
 
   render() {
@@ -61,9 +63,10 @@ export default class Cards extends Component {
           }
           <Dialog open={!!this.state.cardSelected} onRequestClose={() => this.setState({cardSelected:null})} bodyStyle={{}}>{
             <Card style={{
-                width:'800px',
+                width:'700px',
                 height:'500px'
             }}
+            zDepth={0}
             containerStyle={{height:'calc(100% - '+ (this.state.cardSelected&&(this.state.cardSelected.title||this.state.cardSelected.subtitle)?68:0) +'px)'}}
             onClick={() => this.setState({cardSelected:null})}
             {...this.state.cardSelected&&this.state.cardSelected.cardProps}>
@@ -77,7 +80,7 @@ export default class Cards extends Component {
                         justifyContent:'center',
                         alignItems:'center',
                     }}>
-                        {this.getElement(this.state.cardSelected, 800, 500-68)}
+                        {this.getElement(this.state.cardSelected, 670, 500-68)}
                     </div>
                 </div>}
             </Card>
