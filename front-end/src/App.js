@@ -25,21 +25,21 @@ class App extends Component {
             yDomain:[0,45]
           },
           {
-            title:'Air Data',
+            title:'CO2 Level',
             element:'LinePlot',
             data:_.zip(json.dateTime, json.airData),
             xType:'time-utc',
-            yDomain:[0,1500]
+            yDomain:[0,2200]
           },
           {
-            title:'Light Data',
+            title:'Light Level',
             element:'LinePlot',
             data:_.zip(json.dateTime, json.lightData),
             xType:'time-utc',
             yDomain:[0,4000]
           },
           {
-            title:'Moisture Data',
+            title:'Moisture Level',
             element:'LinePlot',
             data:_.zip(json.dateTime, json.moistureData),
             xType:'time-utc',
@@ -48,7 +48,7 @@ class App extends Component {
           {
             title:'Thermostat',
             element:'TurnKnob',
-            value:28,
+            value:this.state.cards[4]?this.state.cards[4].value||28:28,
             min:10,
             max:40,
             colorMin:'#cc6666',
@@ -77,7 +77,7 @@ class App extends Component {
             element:'TurnKnob',
             value:Math.floor(this.state.processedData.airData),
             min:0,
-            max:1500,
+            max:2200,
             readOnly:true,
           },
           {
