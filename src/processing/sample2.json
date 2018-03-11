@@ -1,0 +1,34 @@
+[
+    {
+        "airData": "0.9",
+        "date": "2018-3-8",
+        "lightData": "0.1",
+        "moistureData": "0.5",
+        "tempData": "24.5",
+        "time": "19:29:59"
+    },
+    {
+        "airData": "0.89",
+        "date": "2018-3-8",
+        "lightData": "0.09",
+        "moistureData": "0.49",
+        "tempData": "25.0",
+        "time": "19:30:19"
+    },
+    {
+        "airData": "0.91",
+        "date": "2018-3-8",
+        "lightData": "0.05",
+        "moistureData": "0.45",
+        "tempData": "25.5",
+        "time": "19:30:34"
+    },
+    {
+        "airData": "0.92",
+        "date": "2018-3-8",
+        "lightData": "0.06",
+        "moistureData": "0.41",
+        "tempData": "24.5",
+        "time": "19:30:50"
+    }
+]
