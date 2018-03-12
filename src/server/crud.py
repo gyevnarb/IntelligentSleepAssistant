@@ -109,6 +109,8 @@ def update_processdata():
 @app.route("/processedData", methods=["GET"])
 def get_processdata():
     first_data = ProcessedData.query.all()
+    if (first_data==[]):
+        return jsonify({})
     result = process_schema.dump(first_data[-1]);
     return jsonify(result.data)
 
